@@ -1,3 +1,4 @@
+import 'package:animax_play/presentation/widgets/movie_card.dart';
 import 'package:flutter/material.dart';
 import '../../../domain/usecases/get_popular_movies.dart';
 import '../../../domain/entities/movie.dart';
@@ -33,15 +34,16 @@ class _PopularMoviesPageState extends State<PopularMoviesPage> {
             return Center(child: Text("Error: ${snapshot.error}"));
           } else if (snapshot.hasData) {
             final movies = snapshot.data!;
-            return ListView.builder(
+            return GridView.builder(
+              padding: const EdgeInsets.all(12),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                childAspectRatio: 0.58,
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+              ),
               itemCount: movies.length,
-              itemBuilder: (_, index) {
-                final movie = movies[index];
-                return ListTile(
-                  title: Text(movie.title),
-                  subtitle: Text(movie.releaseDate),
-                );
-              },
+              itemBuilder: (_, index) => MovieCard(movie: movies[index]),
             );
           } else {
             return const Center(child: Text("No hay películas"));

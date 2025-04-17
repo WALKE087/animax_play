@@ -1,6 +1,8 @@
 import '../../domain/entities/movie.dart';
 
 class MovieModel extends Movie {
+  static const String imageBaseUrl = 'https://image.tmdb.org/t/p/w500';
+
   MovieModel({
     required super.id,
     required super.title,
@@ -15,7 +17,7 @@ class MovieModel extends Movie {
       id: json['id'],
       title: json['title'],
       overview: json['overview'],
-      posterPath: json['poster_Path'],
+      posterPath: '$imageBaseUrl${json['backdrop_Path']}',
       releaseDate: json['release_Date'],
       voteAverage: (json['vote_Average'] as num).toDouble(),
     );
