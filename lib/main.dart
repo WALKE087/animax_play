@@ -1,14 +1,14 @@
-import 'package:animax_play/core/network/http_client.dart';
-import 'package:animax_play/data/datasources/movie_remote_datasource_impl.dart';
-import 'package:animax_play/data/repositories/movie_repository_impl.dart';
-import 'package:animax_play/domain/usecases/get_popular_movies.dart';
-import 'package:animax_play/presentation/pages/main_navigation.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:animax_play/presentation/pages/home_page.dart';
+import 'package:animax_play/domain/usecases/get_popular_movies.dart';
+import 'package:animax_play/data/repositories/movie_repository_impl.dart';
+import 'package:animax_play/data/datasources/movie_remote_datasource_impl.dart';
+import 'package:http/http.dart' as http;
 
 void main() {
-  final dataSource = MovieRemoteDataSourceImpl(httpClient);
-  final repository = MovieRepositoryImpl(dataSource);
+  final repository = MovieRepositoryImpl(
+    MovieRemoteDataSourceImpl(http.Client()),
+  );
   final getPopularMovies = GetPopularMovies(repository);
 
   runApp(MyApp(getPopularMovies: getPopularMovies));
@@ -21,10 +21,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
+    return MaterialApp(
+      title: 'AnimaxPlay',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(useMaterial3: true),
-      home: MainNavigation(getPopularMovies: getPopularMovies),
+      home: HomePage(getPopularMovies: getPopularMovies),
     );
   }
 }
