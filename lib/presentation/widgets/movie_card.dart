@@ -35,7 +35,7 @@ class MovieCard extends StatelessWidget {
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [Colors.transparent, Colors.black87],
+                  colors: [Colors.transparent, Color.fromARGB(221, 0, 0, 0)],
                 ),
               ),
               child: Column(
@@ -45,7 +45,7 @@ class MovieCard extends StatelessWidget {
                   Text(
                     movie.title,
                     style: const TextStyle(
-                      color: Colors.white,
+                      color: Color.fromARGB(255, 200, 255, 0),
                       fontWeight: FontWeight.bold,
                     ),
                     maxLines: 2,
