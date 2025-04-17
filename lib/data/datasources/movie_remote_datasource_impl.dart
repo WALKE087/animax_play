@@ -12,12 +12,12 @@ class MovieRemoteDataSourceImpl implements MovieRemoteDataSource {
   final String baseUrl = 'https://localhost:7082/api/Movies';
 
   @override
-  Future<List<MovieModel>> getPopularMovies() async {
-    final response = await client.get(Uri.parse('$baseUrl/popular'));
+  Future<List<MovieModel>> getPopularMovies({int page = 1}) async {
+    final response = await client.get(Uri.parse('$baseUrl/popular?page=$page'));
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-      final results = data['results'] as List;
+      final results = data['items'] as List;
 
       return results.map((json) => MovieModel.fromJson(json)).toList();
     } else {

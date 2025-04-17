@@ -1,7 +1,7 @@
 import 'package:animax_play/presentation/widgets/movie_card.dart';
 import 'package:flutter/material.dart';
-import '../../../domain/usecases/get_popular_movies.dart';
 import '../../../domain/entities/movie.dart';
+import '../../../domain/usecases/get_popular_movies.dart';
 
 class PopularMoviesPage extends StatefulWidget {
   final GetPopularMovies getPopularMovies;
@@ -13,42 +13,97 @@ class PopularMoviesPage extends StatefulWidget {
 }
 
 class _PopularMoviesPageState extends State<PopularMoviesPage> {
-  late Future<List<Movie>> _moviesFuture;
+  final ScrollController _scrollController = ScrollController();
+  final List<Movie> _movies = [];
+  int _currentPage = 1;
+  bool _isLoading = false;
+  bool _hasMore = true;
 
   @override
   void initState() {
     super.initState();
-    _moviesFuture = widget.getPopularMovies();
+    _fetchMovies();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+            _scrollController.position.maxScrollExtent - 300 &&
+        !_isLoading &&
+        _hasMore) {
+      _fetchMovies();
+    }
+  }
+
+  Future<void> _fetchMovies() async {
+    setState(() => _isLoading = true);
+    try {
+      final newMovies = await widget.getPopularMovies(page: _currentPage);
+      setState(() {
+        if (newMovies.isEmpty) {
+          _hasMore = false;
+        } else {
+          _currentPage++;
+          _movies.addAll(newMovies);
+        }
+      });
+    } catch (e) {
+      debugPrint('Error: $e');
+    } finally {
+      setState(() => _isLoading = false);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Películas Populares")),
-      body: FutureBuilder<List<Movie>>(
-        future: _moviesFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text("Error: ${snapshot.error}"));
-          } else if (snapshot.hasData) {
-            final movies = snapshot.data!;
-            return GridView.builder(
-              padding: const EdgeInsets.all(12),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-                childAspectRatio: 0.58,
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 10,
-              ),
-              itemCount: movies.length,
-              itemBuilder: (_, index) => MovieCard(movie: movies[index]),
-            );
-          } else {
-            return const Center(child: Text("No hay películas"));
-          }
-        },
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        title: const Text(
+          "AnimaxPlay",
+          style: TextStyle(color: Color.fromARGB(255, 238, 255, 0)),
+        ),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xFF1d015b), Color(0xFF040021)],
+            transform: GradientRotation(-1.5957),
+          ),
+        ),
+        child: Padding(
+          padding: EdgeInsets.only(
+            top: kToolbarHeight + MediaQuery.of(context).padding.top,
+          ),
+          child: GridView.builder(
+            controller: _scrollController,
+            padding: const EdgeInsets.all(12),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              childAspectRatio: 0.58,
+              crossAxisSpacing: 10,
+              mainAxisSpacing: 10,
+            ),
+            itemCount: _movies.length + (_isLoading ? 1 : 0),
+            itemBuilder: (_, index) {
+              if (index < _movies.length) {
+                return MovieCard(movie: _movies[index]);
+              } else {
+                return const Center(child: CircularProgressIndicator());
+              }
+            },
+          ),
+        ),
       ),
     );
   }
