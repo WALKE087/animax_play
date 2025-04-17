@@ -75,10 +75,10 @@ class _PopularMoviesPageState extends State<PopularMoviesPage> {
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xFF1d015b), Color(0xFF040021)],
-            transform: GradientRotation(-1.5957),
+            begin: Alignment(0.0, -1.0),
+            end: Alignment(0.0, 0.0),
+            colors: [Color(0xFF1D015B), Color.fromARGB(255, 3, 0, 28)],
+            transform: GradientRotation(-1.5956),
           ),
         ),
         child: Padding(
