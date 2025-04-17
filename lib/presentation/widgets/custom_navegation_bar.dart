@@ -12,32 +12,38 @@ class CustomNavigationBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return NavigationBar(
-      onDestinationSelected: onDestinationSelected,
-      indicatorColor: const Color.fromARGB(255, 47, 0, 255),
-      selectedIndex: currentIndex,
-      backgroundColor: Color.fromARGB(255, 3, 1, 35),
-      destinations: const <NavigationDestination>[
-        NavigationDestination(
-          selectedIcon: Icon(Icons.home),
-          icon: Icon(
-            Icons.home_outlined,
-            color: Color.fromRGBO(244, 240, 0, 1),
+    return NavigationBarTheme(
+      data: NavigationBarThemeData(
+        indicatorColor: const Color.fromARGB(255, 47, 0, 255),
+        backgroundColor: const Color.fromARGB(255, 3, 1, 35),
+        labelTextStyle: WidgetStateProperty.resolveWith<TextStyle>((states) {
+          if (states.contains(WidgetState.selected)) {
+            return const TextStyle(
+              color: Color.fromRGBO(244, 240, 0, 1),
+              fontWeight: FontWeight.bold,
+            );
+          }
+          return const TextStyle(color: Colors.white60);
+        }),
+        iconTheme: WidgetStateProperty.resolveWith<IconThemeData>((states) {
+          if (states.contains(WidgetState.selected)) {
+            return const IconThemeData(color: Color.fromRGBO(244, 240, 0, 1));
+          }
+          return const IconThemeData(color: Colors.white60);
+        }),
+      ),
+      child: NavigationBar(
+        onDestinationSelected: onDestinationSelected,
+        selectedIndex: currentIndex,
+        destinations: const [
+          NavigationDestination(icon: Icon(Icons.home), label: 'Películas'),
+          NavigationDestination(
+            icon: Icon(Icons.notifications),
+            label: 'Notificaciones',
           ),
-          label: 'Películas',
-        ),
-        NavigationDestination(
-          icon: Icon(
-            Icons.notifications,
-            color: Color.fromRGBO(244, 240, 0, 1),
-          ),
-          label: 'Notificaciones',
-        ),
-        NavigationDestination(
-          icon: Icon(Icons.message, color: Color.fromRGBO(244, 240, 0, 1)),
-          label: 'Mensajes',
-        ),
-      ],
+          NavigationDestination(icon: Icon(Icons.message), label: 'Mensajes'),
+        ],
+      ),
     );
   }
 }
